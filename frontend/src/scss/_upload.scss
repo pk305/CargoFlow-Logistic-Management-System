@@ -1,0 +1,101 @@
+//
+
+.zc-organization-slide-logo .zc-drag-drop {
+  min-height: 225px;
+  position: relative;
+}
+.zc-drag-drop {
+  width: 100%;
+  height: auto;
+  background: #fbfcff;
+  border: 1.5px solid #dddfe8;
+  text-align: center;
+  padding: 30px;
+}
+.zc-borderradius-four {
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -o-border-radius: 4px;
+  -ms-border-radius: 4px;
+}
+.zc-boxsizing {
+  box-sizing: border-box;
+  min-height: 225px;
+  position: relative;
+}
+.zc-drag-drop-img {
+  margin-bottom: 16px;
+}
+.zc-drag-drop-title {
+  font-size: 14px;
+  color: #4a4e5a;
+  text-align: center;
+  line-height: 33px;
+  padding-bottom: 11px;
+
+  span {
+    color: #808595;
+    display: block;
+    text-transform: uppercase;
+    font-size: 12px;
+    line-height: 25px;
+  }
+}
+.zc-organization-slide-logo .zc-drag-drop {
+  button {
+    display: inline-block;
+    vertical-align: top;
+    margin: 10px auto 0;
+    font-weight: 500;
+  }
+}
+.zc-drag-drop-info {
+  color: #808595;
+  padding-top: 20px;
+  font-size: 12px;
+}
+.zc-drag-drop-file {
+  max-width: 360px;
+}
+ol,
+ul {
+  list-style: none;
+}
+.zbutton__text {
+  line-height: 16px;
+  font-size: 500;
+}
+.zc-drag-drop {
+  width: 100%;
+  height: auto;
+  background: #fbfcff;
+  border: 1.5px solid #dddfe8;
+  text-align: center;
+  padding: 30px;
+}
+.zc-borderradius-four {
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -o-border-radius: 4px;
+  -ms-border-radius: 4px;
+}
+.zc-drag-drop {
+  img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    max-height: 75px;
+    object-fit: contain;
+  }
+
+  button {
+    margin: 20px 5px 0 0;
+    left: auto !important;
+  }
+
+  .zc-upload-button-container {
+    position: absolute;
+    left: calc(50% - 78px);
+    bottom: 40px;
+  }
+}

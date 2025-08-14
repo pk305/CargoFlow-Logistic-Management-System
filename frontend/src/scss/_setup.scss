@@ -1,0 +1,140 @@
+//
+//
+// Setup Scss
+
+.setupProccessContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  color: #3f4254;
+  margin-bottom: 1.5rem;
+  margin-top: 1rem;
+
+  .cardCustom {
+    .card-header {
+      min-height: auto;
+      padding: 1rem;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+    .card-body {
+      padding: 1.5rem;
+    }
+  }
+
+  .setupProccessWrapper {
+    word-wrap: break-word;
+
+    &.spw-1 .setupProccess-nav .setupProccess-steps {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+
+      .setupProccess-step {
+        display: flex;
+        align-items: center;
+        text-align: center;
+
+        .setupProccess-label {
+          margin-left: 3.5rem;
+          margin-right: 3.5rem;
+        }
+
+        .setupProccess-label svg,
+        .setupProccess-label i {
+          color: #b5b5c3;
+        }
+      }
+    }
+
+    &.spw-1
+      .setupProccess-nav
+      .setupProccess-steps
+      .setupProccess-step[data-stepstate='current']
+      .setupProccess-arrow,
+    &.spw-1
+      .setupProccess-nav
+      .setupProccess-steps
+      .setupProccess-step[data-stepstate='current']
+      .setupProccess-label
+      .setupProccess-title,
+    &.spw-1
+      .setupProccess-nav
+      .setupProccess-steps
+      .setupProccess-step[data-stepstate='done']
+      .setupProccess-arrow,
+    &.spw-1
+      .setupProccess-nav
+      .setupProccess-steps
+      .setupProccess-step[data-stepstate='done']
+      .setupProccess-label
+      .setupProccess-title,
+    &.spw-1
+      .setupProccess-nav
+      .setupProccess-steps
+      .setupProccess-step[data-stepstate='current']
+      .setupProccess-label
+      svg,
+    &.spw-1
+      .setupProccess-nav
+      .setupProccess-steps
+      .setupProccess-step[data-stepstate='current']
+      .setupProccess-label
+      i {
+      color: #3699ff;
+    }
+
+    &.spw-1
+      .setupProccess-nav
+      .setupProccess-steps
+      .setupProccess-step
+      .setupProccess-label
+      .setupProccess-title {
+      color: #7e8299;
+      font-size: 1rem;
+      font-weight: 500;
+      margin-top: 0.25rem;
+    }
+
+    &.spw-1 .setupProccess-nav .setupProccess-steps .setupProccess-step .setupProccess-arrow {
+      color: #7e8299;
+      font-size: 1.25rem;
+    }
+
+    &.spw-1
+      .setupProccess-nav
+      .setupProccess-steps
+      .setupProccess-step:last-child
+      .setupProccess-arrow {
+      display: none !important;
+    }
+  }
+}
+.titleHeading {
+    font-size: 1.35rem;
+    font-weight: 600;
+    padding-bottom: 1rem;
+    padding-top: 0.75rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #ebedf3;
+  }
+.subTitleHeading {
+    color: #3699ff;
+    font-weight: 500;
+    font-size: 1.175rem;
+    margin-bottom: 0.5rem;
+  }
+
+.font-size-h1 {
+  font-size: 2rem !important;
+}
+.icon-xl {
+  font-size: 1.75rem !important;
+}
+.fa {
+  font-weight: 400;
+}
+.input-group.lg .pageCstSelect .cstSelect__control .cstSelect__value-container {
+  padding: 0.54em 0.75rem;
+}

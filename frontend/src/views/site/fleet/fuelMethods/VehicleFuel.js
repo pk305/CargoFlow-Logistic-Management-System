@@ -1,0 +1,591 @@
+import React, { useState, useMemo, forwardRef, useRef } from 'react'
+import { AppBreadcrumb } from 'src/components'
+import {
+  CCard,
+  CCardBody,
+  CButton,
+  CButtonGroup,
+  CDropdown,
+  CDropdownToggle,
+  CDropdownMenu,
+  CDropdownItem,
+  CFormInput,
+  CRow,
+  CCol,
+  CPagination,
+  CPaginationItem,
+} from '@coreui/react'
+import {
+  useTable,
+  useFilters,
+  useGlobalFilter,
+  usePagination,
+  useRowSelect,
+  useAsyncDebounce,
+} from 'react-table'
+import PropTypes from 'prop-types'
+import CIcon from '@coreui/icons-react'
+import { cilFilter, cilZoom, cilTrash, cilX } from '@coreui/icons'
+import { useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { matchSorter } from 'match-sorter'
+import classNames from 'classnames'
+import Noty from 'noty'
+import loaderLg from 'src/assets/loader/loaderLg.gif'
+// import SlidingPane from 'react-sliding-pane'
+
+const GlobalFilter = ({ globalFilter, setGlobalFilter }) => {
+  const [value, setValue] = useState(globalFilter)
+  const onChange = useAsyncDebounce((value) => {
+    setGlobalFilter(value || undefined)
+  }, 200)
+
+  return (
+    <>
+      <CFormInput
+        type="text"
+        id="searchComp--users-search"
+        name="users-search"
+        placeholder="Search"
+        className="cst-search-input"
+        value={value || ''}
+        onChange={(e) => {
+          setValue(e.target.value)
+          onChange(e.target.value)
+        }}
+      />
+      <CIcon icon={cilZoom} customClassName="icon-search" size="sm" />
+    </>
+  )
+}
+GlobalFilter.propTypes = {
+  globalFilter: PropTypes.string,
+  setGlobalFilter: PropTypes.func,
+}
+
+const DefaultColumnFilter = ({ column: { filterValue, setFilter } }) => {
+  return (
+    <input
+      value={filterValue || ''}
+      onChange={(e) => {
+        setFilter(e.target.value || undefined) // Set undefined to remove the filter entirely
+      }}
+      placeholder=""
+      style={{ width: '100%' }}
+      className="filterInput-box"
+    />
+  )
+}
+DefaultColumnFilter.propTypes = {
+  column: PropTypes.object,
+  setGlobalFilter: PropTypes.func,
+}
+
+const fuzzyTextFilterFn = (rows, id, filterValue) => {
+  return matchSorter(rows, filterValue, { keys: [(row) => row.values[id]] })
+}
+fuzzyTextFilterFn.propTypes = {
+  rows: PropTypes.array,
+  id: PropTypes.number,
+  filterValue: PropTypes.array,
+}
+
+fuzzyTextFilterFn.autoRemove = (val) => !val
+
+// eslint-disable-next-line react/display-name
+const IndeterminateCheckbox = forwardRef(({ indeterminate, ...rest }, ref) => {
+  const defaultRef = useRef()
+  const resolvedRef = ref || defaultRef
+
+  useEffect(() => {
+    resolvedRef.current.indeterminate = indeterminate
+  }, [resolvedRef, indeterminate])
+
+  return (
+    <>
+      <input type="checkbox" ref={resolvedRef} {...rest} />
+    </>
+  )
+})
+IndeterminateCheckbox.propTypes = {
+  indeterminate: PropTypes.bool,
+}
+
+const Table = ({ columns, data }) => {
+  const [showFilter, setShowFilter] = useState(false)
+  const { loadingWorkOrders } = useSelector((state) => state.company)
+
+  const filterTypes = useMemo(
+    () => ({
+      fuzzyText: fuzzyTextFilterFn,
+      text: (rows, id, filterValue) => {
+        return rows.filter((row) => {
+          const rowValue = row.values[id]
+          return rowValue !== undefined
+            ? String(rowValue).toLowerCase().startsWith(String(filterValue).toLowerCase())
+            : true
+        })
+      },
+    }),
+    [],
+  )
+
+  const defaultColumn = useMemo(
+    () => ({
+      Filter: DefaultColumnFilter,
+    }),
+    [],
+  )
+
+  const handleFilter = (e) => {
+    e.preventDefault()
+    setShowFilter(!showFilter)
+  }
+
+  const handleRemoveItem = (e, items) => {
+    e.preventDefault()
+    var n = new Noty({
+      text: 'The record will be deleted, do you want to continue ?',
+      layout: 'topCenter',
+      progressBar: false,
+      timeout: false,
+      type: 'error',
+      buttons: [
+        Noty.button(
+          'Delete',
+          'btn btn-default btn-sm del-bnt-mr text-danger float-right',
+          function () {
+            // $(`.${item}`).hide()
+            n.close()
+          },
+          { id: 'delItem' },
+        ),
+
+        Noty.button('Cancel', 'btn btn-default btn-sm float-right', function () {
+          n.close()
+        }),
+      ],
+    })
+    n.show()
+  }
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    prepareRow,
+    rows,
+    //
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    selectedFlatRows,
+    state: { pageIndex, selectedRowIds, globalFilter },
+    preGlobalFilteredRows,
+    setGlobalFilter,
+  } = useTable(
+    {
+      columns,
+      data,
+      initialState: { pageSize: 20 },
+      defaultColumn, // Be sure to pass the defaultColumn option
+      filterTypes,
+    },
+    useFilters,
+    useGlobalFilter,
+    usePagination,
+    useRowSelect,
+    (hooks) => {
+      hooks.visibleColumns.push((columns) => [
+        {
+          id: 'selection',
+          // eslint-disable-next-line react/prop-types
+          Header: ({ getToggleAllPageRowsSelectedProps }) => (
+            <div>
+              <IndeterminateCheckbox {...getToggleAllPageRowsSelectedProps()} />
+            </div>
+          ),
+          // eslint-disable-next-line react/prop-types
+          Cell: ({ row }) => (
+            <div>
+              {/*  eslint-disable-next-line react/prop-types */}
+              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+            </div>
+          ),
+        },
+        ...columns,
+      ])
+    },
+  )
+
+  const firstPageRows = rows.slice(0, 10)
+
+  return (
+    <>
+      <CRow className="pageBoxSizing-filter">
+        <CCol
+          sm={12}
+          md={6}
+          lg={6}
+          xl={6}
+          className={classNames({ hide: selectedFlatRows.length > 0 })}
+        >
+          <div className="pageSearchContainer">
+            <div className="cst-search-box">
+              <GlobalFilter
+                preGlobalFilteredRows={preGlobalFilteredRows}
+                globalFilter={globalFilter}
+                setGlobalFilter={setGlobalFilter}
+              />
+            </div>
+          </div>
+        </CCol>
+        <CCol
+          sm={12}
+          md={6}
+          lg={6}
+          xl={6}
+          className={classNames({ hide: selectedFlatRows.length > 0 })}
+        >
+          <div className="cstSearchActions">
+            <CButton color="secondary" variant="outline" onClick={(e) => handleFilter(e)}>
+              {!showFilter ? (
+                <span>
+                  <CIcon icon={cilFilter} /> Filter
+                </span>
+              ) : (
+                <span>
+                  <CIcon icon={cilX} style={{ verticalAlign: '-2px', paddingRight: '2px' }} />
+                  Cancel Filter
+                </span>
+              )}
+            </CButton>
+            {/* <CDropdown>
+              <CDropdownToggle color="secondary" variant="outline" className="drop" caret={false}>
+                <i className="fa fa-list-ol" />
+                <i className="fa fa-angle-down" style={{ marginLeft: '3px' }} />
+              </CDropdownToggle>
+              <CDropdownMenu>
+                <CDropdownItem href="#" onClick={(e) => handleImport(e)}>
+                  Import Company
+                </CDropdownItem>
+                <CDropdownItem href="#">Export Company</CDropdownItem>
+              </CDropdownMenu>
+            </CDropdown> */}
+          </div>
+        </CCol>
+        <CCol
+          sm={12}
+          md={6}
+          lg={6}
+          xl={6}
+          className={classNames({ hide: !selectedFlatRows.length > 0 })}
+        >
+          <div className="pageSearchContainer">
+            <div className="filter-actions">
+              <div className="filterCount-selected">{selectedFlatRows.length}</div>
+              <div className="filterSelected-text">
+                {selectedFlatRows.length === 1 ? 'Company' : 'Drivers'} Selected
+              </div>
+              <div className="filterButtons">
+                <CButton
+                  color="danger"
+                  variant="ghost"
+                  onClick={(e) => handleRemoveItem(e, selectedRowIds)}
+                >
+                  <CIcon icon={cilTrash} /> Delete
+                </CButton>
+              </div>
+            </div>
+          </div>
+        </CCol>
+      </CRow>
+      <div className="pageBoxSizing-container cst-tableResponsive">
+        <div className="table-responsive table-truncate pageTableWrapper">
+          <div>
+            <table className="table pageTable" {...getTableProps()}>
+              <thead>
+                {headerGroups.map((headerGroup) => {
+                  const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps()
+                  return (
+                    <tr key={key} {...restHeaderGroupProps}>
+                      {headerGroup.headers.map((column) => {
+                        const { key, ...restColumn } = column.getHeaderProps()
+                        return (
+                          <th key={key} {...restColumn}>
+                            {column.render('Header')}
+                            <div style={{ display: !showFilter ? 'none' : '' }}>
+                              {column.canFilter && key !== 'header_actions'
+                                ? column.render('Filter')
+                                : null}
+                            </div>
+                          </th>
+                        )
+                      })}
+                    </tr>
+                  )
+                })}
+              </thead>
+              <tbody {...getTableBodyProps}>
+                {firstPageRows.map((row) => {
+                  prepareRow(row)
+                  const { key, ...restRowProps } = row.getRowProps()
+                  return (
+                    <tr key={key} {...restRowProps} className="bg-hover-light-primary">
+                      {row.cells.map((cell) => {
+                        const { key, ...restCellProps } = cell.getCellProps()
+                        return (
+                          <td key={key} {...restCellProps}>
+                            {cell.render('Cell')}
+                          </td>
+                        )
+                      })}
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+            {/* table info */}
+            {!loadingWorkOrders && !firstPageRows.length > 0 && (
+              <div className="table-info">
+                <span>No records found.</span>
+              </div>
+            )}
+            {loadingWorkOrders && (
+              <div className="table-info">
+                <span className="mt-5">
+                  <img src={loaderLg} alt="" />
+                </span>
+              </div>
+            )}
+            {/* table pagination */}
+            <div className="">
+              <div className="pagination">
+                {firstPageRows.length > 0 && (
+                  <div>
+                    <span>
+                      Showing page {pageIndex + 1} of {pageOptions.length} - {data.length} entries
+                    </span>
+                  </div>
+                )}
+                {firstPageRows.length > 20 && (
+                  <CPagination aria-label="cst-table-navigation">
+                    <CPaginationItem
+                      aria-label="First"
+                      onClick={() => gotoPage(0)}
+                      disabled={!canPreviousPage}
+                    >
+                      <span aria-hidden="true"> {'<<'}</span>
+                    </CPaginationItem>
+                    <CPaginationItem
+                      aria-label="Previous"
+                      onClick={() => previousPage()}
+                      disabled={!canPreviousPage}
+                    >
+                      <span aria-hidden="true">{'<'}</span>
+                    </CPaginationItem>
+                    <CPaginationItem
+                      aria-label="Next"
+                      onClick={() => nextPage()}
+                      disabled={!canNextPage}
+                    >
+                      <span aria-hidden="true">{'>'}</span>
+                    </CPaginationItem>
+                    <CPaginationItem
+                      aria-label="Last"
+                      onClick={() => gotoPage(pageCount - 1)}
+                      disabled={!canNextPage}
+                    >
+                      <span aria-hidden="true">{'>>'}</span>
+                    </CPaginationItem>
+                  </CPagination>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+const VehicleFuel = () => {
+  const [breadcrumbList] = useState([
+    { name: 'Vehicles', pathname: '/vehicles' },
+    { name: 'Drivers', pathname: '/drivers' },
+    { name: 'Periodic Documents', pathname: '/periodocs' },
+    { name: 'Service Logs', pathname: '/servicelogs' },
+    { name: 'Expense Forms', pathname: '/expense_forms?person_type=driver' },
+    { name: 'Fuel Logs', pathname: '/fuellogs?scope=vehiclel', active: true },
+    { name: 'Gate Actions', pathname: '/gate_actions' },
+    { name: 'Facility Management', pathname: '/facility_managements' },
+    { name: 'RoRo Tickets', pathname: '/transdocs?view_scope=roro' },
+  ])
+  // const [positionData, setPositionData] = useState({
+  //   contractType: '',
+  //   extref: '',
+  //   emptyTruck: false,
+  //   operationId: '',
+  //   operatorId: '',
+  // })
+  // const errorCallout = useState('')
+
+  // const handleChangeForm = (e) => {
+  //   const { name, value } = e.target
+  //   setPositionData({
+  //     ...positionData,
+  //     [name]: value,
+  //   })
+  // }
+
+  // const handleSubmit = () => {
+  //   dispatch(storeRoadFreight(positionData))
+  // }
+
+  // const closeCallout = (e) => {
+  //   e.preventDefault()
+  //   // dispatch(clearBookingError({ type: 'msgCallout', errorType: 'calloutErr' }))
+  // }
+
+  const data = useMemo(() => [], [])
+
+  const columns = useMemo(
+    () => [
+      {
+        Header: '',
+        accessor: 'actions',
+        Cell: (props) => (
+          <div>
+            <div className="table-action-dropdown">
+              <CDropdown>
+                <CDropdownToggle color="link">
+                  <i className="fa fa-ellipsis-h"></i>
+                </CDropdownToggle>
+                <CDropdownMenu>
+                  <CDropdownItem>
+                    <i className="fa fa-edit" />
+                    <span className="text-rl">Edit</span>
+                  </CDropdownItem>
+
+                  <CDropdownItem>
+                    <i className="fa fa-trash" />
+                    <span className="text-rl">Delete</span>
+                  </CDropdownItem>
+                </CDropdownMenu>
+              </CDropdown>
+            </div>
+          </div>
+        ),
+      },
+      {
+        Header: <span>Profile Picture</span>,
+        accessor: 'name',
+      },
+      {
+        Header: <span>Driver Name</span>,
+        accessor: 'driverName',
+      },
+      {
+        Header: <span>Ref No / Passport</span>,
+        accessor: 'email',
+      },
+      {
+        Header: <span>Truck</span>,
+        accessor: 'address',
+      },
+      {
+        Header: <span>Mobile Phone</span>,
+        accessor: 'taxNo',
+      },
+      {
+        Header: <span>Staffed / Hackman</span>,
+        accessor: 'branch',
+      },
+      {
+        Header: <span>Operation</span>,
+        accessor: 'Start',
+      },
+      {
+        Header: <span>Branch</span>,
+        accessor: 'Finish',
+      },
+      {
+        Header: <span>City</span>,
+        accessor: 'Advance',
+      },
+      {
+        Header: <span>Country</span>,
+        accessor: 'Expense',
+      },
+      {
+        Header: <span>Hire Date</span>,
+        accessor: 'Branch',
+      },
+      {
+        Header: <span>Status</span>,
+        accessor: 'Status',
+      },
+    ],
+    [],
+  )
+
+  return (
+    <div>
+      <div className="cstContainerDef">
+        <AppBreadcrumb items={breadcrumbList} />
+      </div>
+
+      <div className="pageContainer newBookings">
+        <div className="container-fluid h-100">
+          <div className="d-block"></div>
+
+          <CCard className="cardCustom">
+            <div className="card-header">
+              <div className="toolBarContainer">
+                <div className="customHeaderContainer">
+                  <div className="customHeaderContainer-footer">
+                    <div className="card-title">
+                      <h3 className="cstCardbodyHeaderTitle">Fuel Logs</h3>
+                    </div>
+                  </div>
+                </div>
+                <div className="customHeaderToolbar">
+                  <CButtonGroup role="group">
+                    <CDropdown>
+                      <CDropdownToggle color="primary" className="drop" caret={false}>
+                        Vehicle Operations
+                      </CDropdownToggle>
+                      <CDropdownMenu>
+                        <CDropdownItem href="#">Fuel Transfer Depot To Vehicle</CDropdownItem>
+                        <CDropdownItem href="#">Fuel Transfer Depot To Depot</CDropdownItem>
+                        <CDropdownItem href="#">Vehicles Cut off</CDropdownItem>
+                        <CDropdownItem href="#">Fuel Transfer Vehicle to Vehicle</CDropdownItem>
+                        <CDropdownItem href="#">Vehicle Fuel Purchase</CDropdownItem>
+                      </CDropdownMenu>
+                    </CDropdown>
+                  </CButtonGroup>
+                </div>
+              </div>
+            </div>
+            <CCardBody className="p-0">
+              <div className="pageContainer-wrapper isTable">
+                <Table columns={columns} data={data} />
+              </div>
+            </CCardBody>
+          </CCard>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+Table.propTypes = {
+  columns: PropTypes.array,
+  data: PropTypes.array,
+}
+
+export default VehicleFuel

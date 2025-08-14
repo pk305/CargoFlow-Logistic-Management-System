@@ -1,0 +1,38 @@
+// If you want to override variables do it here
+@import 'variables';
+
+$enable-ltr: true;
+$enable-rtl: true;
+
+// Import CoreUI for React components library
+@import '@coreui/coreui/scss/coreui';
+
+// Import Chart.js custom tooltips styles
+@import '@coreui/chartjs/scss/coreui-chartjs';
+
+// animate css
+@import 'animate.css';
+
+//Noty.js notifcations css
+@import 'noty/src/noty.scss';
+@import 'noty/src/themes/nest.scss';
+
+//Sliding panel css
+@import 'react-sliding-pane/dist/react-sliding-pane.css';
+
+//
+@import 'react-datepicker/dist/react-datepicker.css';
+
+//
+@import '@uppy/core/dist/style.css';
+@import '@uppy/dashboard/dist/style.css';
+
+@import 'layout';
+
+// If you want to add custom CSS you can put it here.
+@import 'custom';
+@import 'upload';
+@import 'auth';
+@import 'setup';
+@import 'preview_temp';
+@import 'reports';

@@ -1,0 +1,30 @@
+Nueklabs TMS v1.0.0 - March 20, 2022
+
+[New Features]
+- Added finance invoice report.
+
+[Known Issues]
+- Notification and Messages button not working
+
+
+Nueklabs TMS v1.0.0 - March 19, 2022
+
+[New Features]
+- Added users resource
+
+
+Nueklabs TMS v1.0.0 - March 18, 2022
+
+[New Features]
+- Added Changelog support.
+
+[Bug Fixes]
+- Can now edit change Organization
+- Can now upload logo
+
+[Known Issues]
+- Cannot export reports to any of the available formats.
+- Cannot edit,delete,update most of the resources
+- Error 404 pages on some of the links
+
+

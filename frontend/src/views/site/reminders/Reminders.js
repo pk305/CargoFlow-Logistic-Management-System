@@ -56,7 +56,7 @@ const Reminders = () => {
   }
 
   useEffect(() => {
-    document.title = 'Nueklabs TMS'
+    document.title = 'CargoFlow TMS'
   }, [])
 
   return (

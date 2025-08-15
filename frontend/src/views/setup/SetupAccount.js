@@ -90,7 +90,7 @@ const SetupAccount = () => {
                   </div>
                   <div className="customHeaderContainer-footer">
                     <div className="card-title">
-                      <h3 className="card-label">Welcome to Nueklabs TMS</h3>
+                      <h3 className="card-label">Welcome to CargoFlow TMS</h3>
                     </div>
                   </div>
                 </div>

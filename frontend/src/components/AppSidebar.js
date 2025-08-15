@@ -4,7 +4,7 @@ import { AppSidebarNav } from './AppSidebarNav'
 import SimpleBar from 'simplebar-react'
 import 'simplebar/dist/simplebar.min.css'
 // import logo from 'src/assets/brand/truck-logo.png'
-import miniLogo from 'src/assets/brand/brand.png'
+import miniLogo from 'src/assets/brand/cargo-logo-transparent.png'
 import { storeLocalData, getLocalData, triggerEvent } from 'src/config/helpers'
 import { isNull } from 'lodash'
 import PropTypes from 'prop-types'
@@ -27,8 +27,7 @@ const AppSidebar = ({ mainUnfoldable, mainSidebar }) => {
     const sShow = getLocalData('sidebarShow')
     if (isNull(sShow)) {
       storeLocalData('sidebarShow', !sShow)
-      storeLocalData('sidebarUnfoldable', true)
-      console.log('logb')
+      storeLocalData('sidebarUnfoldable', false)
     } else {
       storeLocalData('sidebarShow', true)
     }
@@ -37,9 +36,9 @@ const AppSidebar = ({ mainUnfoldable, mainSidebar }) => {
   return (
     <CSidebar
       position="fixed"
-      unfoldable={mainUnfoldable}
-      visible={mainSidebar}
-      onVisibleChange={(visible) => showHideMainMenu(visible)}
+      // unfoldable={mainUnfoldable}
+      // visible={mainSidebar}
+      // onVisibleChange={(visible) => showHideMainMenu(visible)}
     >
       <CSidebarBrand
         className="d-none d-md-flex"
@@ -48,7 +47,7 @@ const AppSidebar = ({ mainUnfoldable, mainSidebar }) => {
           minWidth: '53px',
           maxWidth: '100%',
           alignItems: 'center',
-          justifyContent: 'flex-start',
+          justifyContent: 'centert',
           padding: '0px',
           margin: '0px',
           background: '#fff',
@@ -56,6 +55,11 @@ const AppSidebar = ({ mainUnfoldable, mainSidebar }) => {
         }}
       >
         <CImage
+          src={miniLogo}
+          style={{ maxWidth: '100%', objectFit: 'contain', height: '34px' }}
+          alt=""
+        />
+        {/* <CImage
           src={miniLogo}
           style={{ maxWidth: '100%', objectFit: 'cover', height: '52px' }}
           alt=""
@@ -74,9 +78,9 @@ const AppSidebar = ({ mainUnfoldable, mainSidebar }) => {
               whiteSpace: 'nowrap',
             }}
           >
-            Nueklabs TMS
+            CargoFlow TMS
           </span>
-        </div>
+        </div> */}
       </CSidebarBrand>
       <CSidebarNav>
         <SimpleBar>

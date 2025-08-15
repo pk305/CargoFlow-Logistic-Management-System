@@ -41,6 +41,11 @@
   src: url('../assets/fonts/Roboto/Roboto-Thin.ttf');
 }
 
+:root {
+  --cui-sidebar-bg: #06303e;
+  // --cui-sidebar-bg: #06303e;
+}
+
 body,
 html {
   font-family: Inter, sans-serif;

@@ -193,7 +193,7 @@ const ForgotPassword = () => {
               <span id="headTitle">Forgot Password</span>
               <div className="headerInfo">
                 Enter your registered email address, mobile number, or username to change your
-                Nueklabs TMS account password.
+                CargoFlow TMS account password.
               </div>
             </div>
             <div className="fieldContainer">

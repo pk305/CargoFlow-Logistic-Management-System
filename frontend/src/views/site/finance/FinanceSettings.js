@@ -42,7 +42,7 @@ const FinanceSettings = () => {
   }
 
   useEffect(() => {
-    document.title = 'Nueklabs TMS'
+    document.title = 'CargoFlow TMS'
   }, [])
 
   return (

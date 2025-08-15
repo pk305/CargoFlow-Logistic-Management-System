@@ -70,7 +70,7 @@ const DefaultLayout = () => {
   }, [])
 
   useEffect(() => {
-    document.title = 'Nueklabs TMS'
+    document.title = 'CargoFlow TMS'
     //
     handleActiveNav()
 
@@ -143,7 +143,7 @@ const DefaultLayout = () => {
           onClose={() => closeShowInfo()}
         >
           <CModalHeader>
-            <CModalTitle className="ml-2">Nueklabs TMS Changelog v1.0.0</CModalTitle>
+            <CModalTitle className="ml-2">CargoFlow TMS Changelog v1.0.0</CModalTitle>
           </CModalHeader>
           <CModalBody className="p-2 bg-white">
             <CCard className="cardCustom gutter-b" style={{ boxShadow: 'none' }}>

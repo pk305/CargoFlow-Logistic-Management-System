@@ -39,7 +39,7 @@ const Tickets = () => {
   }
 
   useEffect(() => {
-    document.title = 'Nueklabs TMS'
+    document.title = 'CargoFlow TMS'
   }, [])
 
   return (

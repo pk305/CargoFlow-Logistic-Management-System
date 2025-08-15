@@ -35,7 +35,6 @@ const fetchUserDetails = createAsyncThunk('auth/fetchUserDetails', async (_, thu
       withCredentials: true,
     })
 
-    console.log(res)
     if (res.data && res.data.statusCode === 200) {
       Cookies.set('utx_', res.data.userDetails.uuid)
     }

@@ -22,7 +22,7 @@ import { isNull } from 'lodash'
 import $ from 'jquery'
 import PropTypes from 'prop-types'
 import { useCallback } from 'react'
-import logoBrand from 'src/assets/brand/truck-logo.png'
+import logoBrand from 'src/assets/brand/cargo-logo-grayscale-transparent.png'
 
 const Login = ({ fallbackLoading }) => {
   const history = useHistory()
@@ -178,15 +178,16 @@ const Login = ({ fallbackLoading }) => {
         {/* Login  */}
         <div className="signinBox" id="signinBoxAcc" style={{ marginTop: '-23px' }}>
           {/* logo */}
-          <div className="logoWrap">
+          <div className="logoWrap my-4">
             <div
               className="logoDefault"
               style={{
                 background: `url('${logoBrand}') no-repeat transparent`,
-                backgroundSize: 'contain',
                 backgroundPosition: 'center',
+                backgroundSize: 'contain',
               }}
             ></div>
+            <p>Efficiency in every shipment</p>
           </div>
           {/* form content */}
           <div id="signinFormWrap">
@@ -194,7 +195,7 @@ const Login = ({ fallbackLoading }) => {
               <div className="signinHeader">
                 <span id="headerTitle">Sign in</span>
                 <div className="serviceName">
-                  to access <span>Nueklabs TMS</span>
+                  to access <span>CargoFlow TMS</span>
                 </div>
                 <div className="fieldError"></div>
               </div>

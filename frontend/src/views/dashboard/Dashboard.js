@@ -269,7 +269,7 @@ const Dashboard = () => {
               className="dashboardCustom"
             >
               <div className="row">
-                <div className="col-12 col-md-4 mb-6 mb-lg-0">
+                {/* <div className="col-12 col-md-4 mb-6 mb-lg-0">
                   <CCard className="cardCustom gutter-b">
                     <div className="card-header cstHeaderTabs-line">
                       <div className="toolBarContainer">
@@ -304,6 +304,49 @@ const Dashboard = () => {
                         labels: ['Transit'],
                       }}
                     />
+                  </CCard>
+                </div> */}
+                <div className="col-12 col-md-4 mb-6 mb-lg-0">
+                  <CCard className="cardCustom gutter-b">
+                    <div className="card-header cstHeaderTabs-line">
+                      <div className="toolBarContainer">
+                        <div className="customHeaderContainer">
+                          <div className="customHeaderContainer-footer">
+                            <div className="card-title">
+                              <h6 className="card-label">Ongoing Transport</h6>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Add a wrapper div with fixed height */}
+                    <div style={{ height: '350px', padding: '20px' }}>
+                      <CChartDoughnut
+                        id="chart-1"
+                        style={{
+                          height: '100%',
+                          width: '100%',
+                        }}
+                        options={{
+                          maintainAspectRatio: false,
+                          responsive: true,
+                          plugins: {
+                            legend: {
+                              position: 'bottom',
+                            },
+                          },
+                        }}
+                        data={{
+                          datasets: [
+                            {
+                              backgroundColor: ['#41B883'],
+                              data: [40],
+                            },
+                          ],
+                          labels: ['Transit'],
+                        }}
+                      />
+                    </div>
                   </CCard>
                 </div>
                 <div className="col-12 col-md-4 mb-6 mb-lg-0">

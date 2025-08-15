@@ -4,10 +4,10 @@
 |--------------------------------------------------
 */
 
-const API_URL = 'http://localhost:8000'
-const IMAGE_API_URL = 'http://localhost:8000/assets/media' //image url
-const SOCKET_SERVER = 'http://localhost:6001' // socket server
-const BASE_URL = 'http://localhost:3002' //base url
+const API_URL = 'http://127.0.0.1:8000'
+const IMAGE_API_URL = 'http:/127.0.0.1:8000/assets/media' //image url
+const SOCKET_SERVER = 'http://127.0.0.1:6001' // socket server
+const BASE_URL = 'http://127.0.0.1:3002' //base url
 
 // const API_URL = 'http://api.brihantransporters.co.ke' // backend url
 // const IMAGE_API_URL = 'http://api.brihantransporters.co.ke/assets/media' //image url

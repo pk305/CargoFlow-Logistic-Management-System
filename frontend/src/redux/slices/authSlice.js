@@ -31,17 +31,22 @@ const initialState = {
 
 const fetchUserDetails = createAsyncThunk('auth/fetchUserDetails', async (_, thunkAPI) => {
   try {
-    const res = await api().get(`${userApi}`)
+    const res = await api().get(`${userApi}`, {
+      withCredentials: true,
+    })
+
+    console.log(res)
     if (res.data && res.data.statusCode === 200) {
       Cookies.set('utx_', res.data.userDetails.uuid)
     }
 
     return thunkAPI.fulfillWithValue(res.data)
-  } catch (err) {
-    if (!err.response) {
-      throw err
-    }
-    return thunkAPI.rejectWithValue(err.response.data)
+  } catch (error) {
+    console.log('error', error)
+    // if (!err.response) {
+    //   throw err
+    // }
+    return thunkAPI.rejectWithValue(error.response.data)
   }
 })
 
@@ -104,8 +109,13 @@ const checkUserPassword = createAsyncThunk(
           withCredentials: true,
         },
       )
+
+      console.log(`res.data`, res.data)
+
       return fulfillWithValue(res.data)
     } catch (err) {
+      console.log(`res.err`, err)
+
       if (!err.response) {
         throw err
       }

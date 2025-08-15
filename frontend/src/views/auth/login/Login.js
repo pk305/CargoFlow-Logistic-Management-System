@@ -74,16 +74,17 @@ const Login = ({ fallbackLoading }) => {
       try {
         await dispatch(fetchUserById(data)).unwrap()
       } catch (error) {
-        if (error) {
-          const err = !error.statusCode ? JSON.parse(error) : null
-          if (err) {
-            if (err.code === 500) {
-              if (err.errors === 'Network Error') {
-                history.push('/505')
-              }
-            }
-          }
-        }
+        console.error(error)
+        // if (error) {
+        //   const err = !error.statusCode ? JSON.parse(error) : null
+        //   if (err) {
+        //     if (err.code === 500) {
+        //       if (err.errors === 'Network Error') {
+        //         history.push('/505')
+        //       }
+        //     }
+        //   }
+        // }
       }
     } else {
       if (form.length > 0) {

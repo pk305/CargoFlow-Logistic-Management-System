@@ -7,13 +7,13 @@ export default function api() {
   let api = axios.create({
     baseURL: API_URL,
     timeout: 90000,
+    withCredentials: true,
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Credentials': true,
+      Accept: 'application/json',
       'X-Socket-ID': typeof socketId !== 'undefined' ? socketId : null,
       'X-Requested-With': 'XMLHttpRequest',
     },
-    withCredentials: true,
   })
 
   return api

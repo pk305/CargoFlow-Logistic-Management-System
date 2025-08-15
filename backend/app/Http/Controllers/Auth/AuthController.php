@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -28,14 +29,12 @@ class AuthController extends Controller
     {
         if (!$id) return;
         $user = null;
-        //check username
         if (filter_var($id, FILTER_VALIDATE_EMAIL)) {
             $user = User::where(['email' => $id])->first();
         } else {
             $loginUser = preg_replace('/([^@]*).*/', '$1', $id); //filter username in email
             $user = User::where('username', $id)->orWhere('mobile_number', $loginUser)->first();
         }
-        //
         $userData = [];
         if (empty($user)) {
             $userData = (object)[
@@ -73,23 +72,21 @@ class AuthController extends Controller
     {
         $validated = $request->validate(['password' => 'required|max:255']);
         if (!$validated)  return;
-        //login attempts
-        // if hasTooManyLoginAttempts;
         $user = User::where('id', $id)->first();
+
         if (!$user)  return;
         return $this->requestPasswordGrant($request, $user);
     }
 
     public function requestPasswordGrant($request, $user)
     {
-        // fetch oauth token
         request()->request->add([
             'client_id' => config('auth.proxy.client_id'),
             'client_secret' => config('auth.proxy.client_secret'),
             'grant_type' => config('auth.proxy.grant_type'),
             'username' => $user->email,
             'password' => $request->password,
-            'scopes' => 'client/*'
+            'scopes' => '*'
         ]);
 
         try {
@@ -122,25 +119,52 @@ class AuthController extends Controller
 
                 return new AuthResource($userData);
             }
-            // Success
-            // clearLoginAttempts
+
             $userData = (object)[
                 "code" => $response->getStatusCode(),
-                "message" => "Successfuly Logged In",
+                "message" => "Successfully Logged In",
                 "resourceName" => "passwordAuth",
-                "localizedMessage" => "Successfuly Logged In",
+                "localizedMessage" => "Successfully Logged In",
                 "statusCode" => 200,
-                "lookupData" => null
+                "lookupData" => null,
             ];
 
-            return response()->json(new AuthResource($userData))
-                ->cookie('__ftxn', $content['access_token'], $content['expires_in'] + time(), '/')
-                ->cookie('__rftuuid', $content['refresh_token'], $content['expires_in'] + time(), '/');
+            $expirationMinutes = ($content['expires_in'] ?? 3600) / 60;
+
+            $response = response()->json(new AuthResource($userData));
+            $token = $content['access_token'];
+            $refresh_token = $content['refresh_token'];
+            $response->cookie(
+                '__ftxn',
+                $token,
+                $expirationMinutes,
+                '/',
+                config('app.url') ? parse_url(config('app.url'), PHP_URL_HOST) : null,
+                config('app.env') === 'production',
+                true,
+                false,
+                config('app.env') === 'production' ? 'strict' : 'lax'
+            );
+
+            if (!empty($content['refresh_token'])) {
+                $response->cookie(
+                    '__rftuuid',
+                    $refresh_token,
+                    $expirationMinutes,
+                    '/',
+                    config('app.url') ? parse_url(config('app.url'), PHP_URL_HOST) : null,
+                    config('app.env') === 'production',
+                    true,
+                    false,
+                    config('app.env') === 'production' ? 'strict' : 'lax'
+                );
+            }
+
+            return $response;
         } catch (QueryException $e) {
             return response($e, 400);
         }
     }
-
 
     public function fetchUser(Request $request)
     {
@@ -166,6 +190,7 @@ class AuthController extends Controller
 
             return new UserDetails($data);
         }
+
         $data = (object) [
             'statusCode' => 401,
             'userDetails' => null
@@ -182,8 +207,6 @@ class AuthController extends Controller
         }
     }
 
-
-
     public function logoutUser(Request $request)
     {
         $user = !empty($request->user()) && $request->isAuth ? $request->user() : null;
@@ -194,15 +217,37 @@ class AuthController extends Controller
                 ->where('access_token_id', $accessToken->id)
                 ->delete();
             $accessToken->revoke();
+
             $data = (object) [
                 'statusCode' => 200,
                 'revoked' => $accessToken->revoked
             ];
 
-            // Cookie::remove('__ftxn');
-            // Cookie::remove('__rftuuid');
+            $response = response()->json($data, 200);
 
-            return response()->json($data, 200);
+            $response->cookie(Cookie::forget('__ftxn'));
+
+            $response->cookie(Cookie::forget('__rftuuid'));
+
+            return $response;
         }
+    }
+
+    /**
+     * Helper method to create secure cookies
+     */
+    private function createSecureCookie($name, $value, $expirationMinutes)
+    {
+        return Cookie::make(
+            $name,
+            $value,
+            $expirationMinutes,
+            '/',
+            config('app.url') ? parse_url(config('app.url'), PHP_URL_HOST) : null,
+            config('app.env') === 'production',
+            true,
+            false,
+            config('app.env') === 'production' ? 'strict' : 'lax'
+        );
     }
 }
